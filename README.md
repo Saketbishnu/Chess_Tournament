@@ -99,3 +99,12 @@ You can preview the production build with `npm run preview`.
          ↓
 
       Matches
+## Player Table in PostgreSQL
+    Player Table
+
++----+-------+-----+--------+---------+
+| id | name  | age | rating | country |
++----+-------+-----+--------+---------+
+| 1  | Saket | 22  | 900    | India   |
++----+-------+-----+--------+---------+
+   ![Player Table](screenshots/player-table.png)
