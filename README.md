@@ -40,6 +40,7 @@ npm run build
 You can preview the production build with `npm run preview`.
 
  ## Overall Architecture
+
                 User
                   │
                   ▼
@@ -60,25 +61,41 @@ You can preview the production build with `npm run preview`.
      Admin opens website
         │
         ▼
-Create Players
+     Create Players
         │
         ▼
-Create Tournament
+     Create Tournament
         │
         ▼
-Add Players
+     Add Players
         │
         ▼
-Start Tournament
+     Start Tournament
         │
         ▼
-Random Match Generation
+     Random Match Generation
         │
         ▼
-Random Winner Selection
+     Random Winner Selection
         │
         ▼
-Store Results
+     Store Results
         │
         ▼
-Show Rankings
+     Show Rankings
+
+##  Our project will have four tables.
+
+       Players
+
+          ↓
+
+     Tournaments
+
+         ↓
+
+     TournamentPlayers
+
+         ↓
+
+      Matches
