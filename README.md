@@ -39,7 +39,7 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-  ## Overall Architecture
+ ## Overall Architecture
                 User
                   │
                   ▼
@@ -54,3 +54,31 @@ You can preview the production build with `npm run preview`.
                   │
                   ▼
           PostgreSQL Database
+
+##  Overall Flow of the project
+
+     Admin opens website
+        │
+        ▼
+Create Players
+        │
+        ▼
+Create Tournament
+        │
+        ▼
+Add Players
+        │
+        ▼
+Start Tournament
+        │
+        ▼
+Random Match Generation
+        │
+        ▼
+Random Winner Selection
+        │
+        ▼
+Store Results
+        │
+        ▼
+Show Rankings
