@@ -107,4 +107,16 @@ You can preview the production build with `npm run preview`.
 +----+-------+-----+--------+---------+
 | 1  | Saket | 22  | 900    | India   |
 +----+-------+-----+--------+---------+
+
+
    ![Player Table](screenshots/player-table.png)
+
+ ## tournament table
+
+ +----+------+----------+------------+---------------------+
+| id | name | location | start_date | created_at          |
++----+------+----------+------------+---------------------+
+| 1  | xyz  | mumbai   | 2026-07-18 | 2026-07-10 03:14:22 |
++----+------+----------+------------+---------------------+
+
+  ![tournament table ](screenshots/tournament_table.png)
