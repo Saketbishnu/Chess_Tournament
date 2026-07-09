@@ -1,122 +1,230 @@
-# sv
+# ♟️ Chess Tournament Management System
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A web-based Chess Tournament Management System built using **SvelteKit** and **PostgreSQL**.
 
-## Creating a project
+The application allows administrators to manage players, create tournaments, assign players to tournaments, generate random matches, automatically select winners, and display tournament rankings.
 
-If you're seeing this, you've probably already done this step. Congrats!
+---
 
-```sh
-# create a new project
-npx sv create my-app
+# 🚀 Tech Stack
+
+- **Frontend:** Svelte
+- **Backend:** SvelteKit
+- **Database:** PostgreSQL
+- **Language:** JavaScript
+
+---
+
+# 📦 Project Setup
+
+Clone the repository
+
+```bash
+git clone https://github.com/Saketbishnu/Chess_Tournament.git
 ```
 
-To recreate this project with the same configuration:
+Navigate to the project folder
 
-```sh
-# recreate this project
-npx sv@0.16.2 create --template minimal --no-types --install npm .
+```bash
+cd Chess_Tournament
 ```
 
-## Developing
+Install dependencies
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+```bash
+npm install
+```
 
-```sh
+Run the development server
+
+```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+Open
 
-To create a production version of your app:
-
-```sh
-npm run build
+```
+http://localhost:5173
 ```
 
-You can preview the production build with `npm run preview`.
+---
 
- ## Overall Architecture
+# 🏗️ System Architecture
 
+```
                 User
                   │
                   ▼
-         Svelte Frontend (UI)
+          Svelte Frontend
                   │
-        CRUD Requests (HTTP)
+         HTTP API Requests
                   │
                   ▼
-      SvelteKit Server (Backend)
+        SvelteKit Backend
                   │
-          SQL Queries
+          PostgreSQL Queries
                   │
                   ▼
           PostgreSQL Database
+```
 
-##  Overall Flow of the project
+---
 
-     Admin opens website
+# 🔄 Project Workflow
+
+```
+Admin Opens Website
         │
         ▼
-     Create Players
+Create Players
         │
         ▼
-     Create Tournament
+Create Tournament
         │
         ▼
-     Add Players
+Assign Players to Tournament
         │
         ▼
-     Start Tournament
+Generate Random Matches
         │
         ▼
-     Random Match Generation
+Random Winner Selection
         │
         ▼
-     Random Winner Selection
+Store Match Results
         │
         ▼
-     Store Results
-        │
-        ▼
-     Show Rankings
+Display Final Rankings
+```
 
-##  Our project will have four tables.
+---
 
-       Players
+# 🗄️ Database Design
 
-          ↓
+The project uses **four relational tables**.
 
-     Tournaments
+```
+Players
+    │
+    ▼
+Tournaments
+    │
+    ▼
+Tournament_Players
+    │
+    ▼
+Matches
+```
 
-         ↓
+---
 
-     TournamentPlayers
+# 📋 Database Tables
 
-         ↓
+## 1. Players
 
-      Matches
-## Player Table in PostgreSQL
-    Player Table
+| id | name | age | rating | country |
+|----|------|----:|-------:|---------|
+| 1 | Saket | 22 | 900 | India |
 
-+----+-------+-----+--------+---------+
-| id | name  | age | rating | country |
-+----+-------+-----+--------+---------+
-| 1  | Saket | 22  | 900    | India   |
-+----+-------+-----+--------+---------+
+### Table Structure
 
+| Column | Data Type |
+|----------|------------|
+| id | SERIAL PRIMARY KEY |
+| name | VARCHAR(100) |
+| age | INTEGER |
+| rating | INTEGER |
+| country | VARCHAR(100) |
+| created_at | TIMESTAMP |
 
-   ![Player Table](screenshots/player-table.png)
+### Screenshot
 
- ## tournament table
+![Players Table](screenshots/player-table.png)
 
- +----+------+----------+------------+---------------------+
-| id | name | location | start_date | created_at          |
-+----+------+----------+------------+---------------------+
-| 1  | xyz  | mumbai   | 2026-07-18 | 2026-07-10 03:14:22 |
-+----+------+----------+------------+---------------------+
+---
 
-  ![tournament table ](screenshots/tournament_table.png)
+## 2. Tournaments
+
+| id | name | location | start_date | created_at |
+|----|------|----------|------------|------------|
+| 1 | XYZ | Mumbai | 2026-07-18 | 2026-07-10 03:14:22 |
+
+### Table Structure
+
+| Column | Data Type |
+|----------|------------|
+| id | SERIAL PRIMARY KEY |
+| name | VARCHAR(100) |
+| location | VARCHAR(100) |
+| start_date | DATE |
+| created_at | TIMESTAMP |
+
+### Screenshot
+
+![Tournament Table](screenshots/tournament_table.png)
+
+---
+
+# ✨ Features
+
+## ✅ Player Management
+
+- Add Player
+- View Players
+- Update Player
+- Delete Player
+
+---
+
+## ✅ Tournament Management
+
+- Create Tournament
+- View Tournaments
+- Update Tournament
+- Delete Tournament
+
+---
+
+## 🚧 Upcoming Features
+
+- Add Players to Tournament
+- Random Match Generation
+- Random Winner Selection
+- Match History
+- Tournament Rankings (1st, 2nd, 3rd)
+- Improved UI Design
+
+---
+
+# 📁 Project Structure
+
+```
+src
+│
+├── lib
+│   └── server
+│       └── db.js
+│
+└── routes
+    ├── players
+    │   ├── +page.svelte
+    │   └── +server.js
+    │
+    ├── tournaments
+    │   ├── +page.svelte
+    │   └── +server.js
+    │
+    ├── matches
+    │
+    └── ranking
+```
+
+---
+
+# 👨‍💻 Author
+
+**Saket Bishnu**
+
+GitHub: https://github.com/Saketbishnu
+
+LinkedIn: https://www.linkedin.com/in/saket-bishnu-00769a269/
