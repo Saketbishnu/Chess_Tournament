@@ -221,10 +221,3 @@ src
 
 ---
 
-# 👨‍💻 Author
-
-**Saket Bishnu**
-
-GitHub: https://github.com/Saketbishnu
-
-LinkedIn: https://www.linkedin.com/in/saket-bishnu-00769a269/

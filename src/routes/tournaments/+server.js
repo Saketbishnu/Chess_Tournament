@@ -14,10 +14,53 @@ async function createTournamentsTable() {
 	`);
 }
 
-// GET all tournaments
-export async function GET() {
+// Create the tournament_players table if it does not already exist
+async function createTournamentPlayersTable() {
+	await pool.query(`
+		CREATE TABLE IF NOT EXISTS tournament_players (
+			id SERIAL PRIMARY KEY,
+			tournament_id INT NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
+			player_id INT NOT NULL REFERENCES players(id) ON DELETE CASCADE
+		)
+	`);
+
+	await pool.query(`
+		CREATE UNIQUE INDEX IF NOT EXISTS tournament_players_unique
+		ON tournament_players (tournament_id, player_id)
+	`);
+}
+
+// GET tournaments, all players, or players assigned to a tournament
+export async function GET({ url }) {
 	try {
 		await createTournamentsTable();
+		await createTournamentPlayersTable();
+
+		const fetchPlayers = url.searchParams.get("players");
+		const tournamentId = url.searchParams.get("tournament_id");
+
+		if (fetchPlayers === "all") {
+			const playersResult = await pool.query(
+				`SELECT id, name, age, rating, country
+				FROM players
+				ORDER BY id ASC`
+			);
+
+			return json(playersResult.rows, { status: 200 });
+		}
+
+		if (tournamentId) {
+			const assignedPlayersResult = await pool.query(
+				`SELECT p.id, p.name, p.age, p.rating, p.country
+				FROM players p
+				INNER JOIN tournament_players tp ON tp.player_id = p.id
+				WHERE tp.tournament_id = $1
+				ORDER BY p.id ASC`,
+				[tournamentId]
+			);
+
+			return json(assignedPlayersResult.rows, { status: 200 });
+		}
 
 		const result = await pool.query(
 			`SELECT
@@ -40,12 +83,54 @@ export async function GET() {
 	}
 }
 
-// POST create a new tournament
+// POST create a new tournament or assign players to a tournament
 export async function POST({ request }) {
 	try {
 		await createTournamentsTable();
+		await createTournamentPlayersTable();
 
-		const { name, location, start_date } = await request.json();
+		const body = await request.json();
+		const { action, id, name, location, start_date, tournament_id, player_ids } = body;
+
+		if (action === "save_players") {
+			if (!tournament_id || !Array.isArray(player_ids)) {
+				return json(
+					{ error: "Tournament id and player ids are required" },
+					{ status: 400 }
+				);
+			}
+
+			const client = await pool.connect();
+
+			try {
+				await client.query("BEGIN");
+				await client.query(
+					"DELETE FROM tournament_players WHERE tournament_id = $1",
+					[tournament_id]
+				);
+
+				for (const playerId of player_ids) {
+					await client.query(
+						`INSERT INTO tournament_players (tournament_id, player_id)
+						VALUES ($1, $2)
+						ON CONFLICT (tournament_id, player_id) DO NOTHING`,
+						[tournament_id, playerId]
+					);
+				}
+
+				await client.query("COMMIT");
+			} catch (error) {
+				await client.query("ROLLBACK");
+				throw error;
+			} finally {
+				client.release();
+			}
+
+			return json(
+				{ message: "Tournament players saved successfully" },
+				{ status: 200 }
+			);
+		}
 
 		if (!name || !location || !start_date) {
 			return json(
@@ -82,6 +167,7 @@ export async function POST({ request }) {
 export async function PUT({ request }) {
 	try {
 		await createTournamentsTable();
+		await createTournamentPlayersTable();
 
 		const { id, name, location, start_date } = await request.json();
 
@@ -126,12 +212,34 @@ export async function PUT({ request }) {
 	}
 }
 
-// DELETE remove a tournament
+// DELETE remove a tournament or remove one player from a tournament
 export async function DELETE({ request }) {
 	try {
 		await createTournamentsTable();
+		await createTournamentPlayersTable();
 
-		const { id } = await request.json();
+		const { id, tournament_id, player_id } = await request.json();
+
+		if (tournament_id && player_id) {
+			const result = await pool.query(
+				`DELETE FROM tournament_players
+				WHERE tournament_id = $1 AND player_id = $2
+				RETURNING id`,
+				[tournament_id, player_id]
+			);
+
+			if (result.rowCount === 0) {
+				return json(
+					{ error: "Tournament player assignment not found" },
+					{ status: 404 }
+				);
+			}
+
+			return json(
+				{ message: "Player removed from tournament successfully" },
+				{ status: 200 }
+			);
+		}
 
 		if (!id) {
 			return json(

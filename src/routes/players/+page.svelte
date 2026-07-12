@@ -112,87 +112,98 @@
 	});
 </script>
 
-<h1>Player Management</h1>
+<section class="page-header">
+	<h1>Player Management</h1>
+	<p>Add players, update details, and keep the tournament roster organized.</p>
+</section>
 
 {#if errorMessage}
-	<p>{errorMessage}</p>
+	<p class="message">{errorMessage}</p>
 {/if}
 
-<form
-	onsubmit={(event) => {
-		event.preventDefault();
-		savePlayer();
-	}}
->
-	<div>
-		<label for="name">Name</label><br>
-		<input id="name" type="text" bind:value={name} required>
-	</div>
+<div class="stack">
+	<section class="card">
+		<h2 class="section-title">{editingPlayerId === null ? "Add Player" : "Update Player"}</h2>
 
-	<br>
+		<form
+			onsubmit={(event) => {
+				event.preventDefault();
+				savePlayer();
+			}}
+		>
+			<div class="form-grid">
+				<div class="field">
+					<label for="name">Name</label>
+					<input id="name" type="text" bind:value={name} required>
+				</div>
 
-	<div>
-		<label for="age">Age</label><br>
-		<input id="age" type="number" min="1" bind:value={age} required>
-	</div>
+				<div class="field">
+					<label for="age">Age</label>
+					<input id="age" type="number" min="1" bind:value={age} required>
+				</div>
 
-	<br>
+				<div class="field">
+					<label for="rating">Rating</label>
+					<input id="rating" type="number" min="0" bind:value={rating} required>
+				</div>
 
-	<div>
-		<label for="rating">Rating</label><br>
-		<input id="rating" type="number" min="0" bind:value={rating} required>
-	</div>
+				<div class="field">
+					<label for="country">Country</label>
+					<input id="country" type="text" bind:value={country} required>
+				</div>
+			</div>
 
-	<br>
+			<div class="actions">
+				<button class="btn btn-success" type="submit">
+					{editingPlayerId === null ? "Add Player" : "Update Player"}
+				</button>
 
-	<div>
-		<label for="country">Country</label><br>
-		<input id="country" type="text" bind:value={country} required>
-	</div>
+				{#if editingPlayerId !== null}
+					<button class="btn btn-muted" type="button" onclick={clearForm}>Cancel</button>
+				{/if}
+			</div>
+		</form>
+	</section>
 
-	<br>
+	<section class="card">
+		<h2 class="section-title">Players List</h2>
 
-	<button type="submit">
-		{editingPlayerId === null ? "Add Player" : "Update Player"}
-	</button>
+		<div class="table-wrap">
+			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Age</th>
+						<th>Rating</th>
+						<th>Country</th>
+						<th>Edit</th>
+						<th>Delete</th>
+					</tr>
+				</thead>
 
-	{#if editingPlayerId !== null}
-		<button type="button" onclick={clearForm}>Cancel</button>
-	{/if}
-</form>
-
-<hr>
-
-<h2>Players List</h2>
-
-<table border="1" cellpadding="10">
-	<thead>
-		<tr>
-			<th>ID</th>
-			<th>Name</th>
-			<th>Age</th>
-			<th>Rating</th>
-			<th>Country</th>
-			<th>Edit</th>
-			<th>Delete</th>
-		</tr>
-	</thead>
-
-	<tbody>
-		{#each players as player}
-			<tr>
-				<td>{player.id}</td>
-				<td>{player.name}</td>
-				<td>{player.age}</td>
-				<td>{player.rating}</td>
-				<td>{player.country}</td>
-				<td>
-					<button type="button" onclick={() => editPlayer(player)}>Edit</button>
-				</td>
-				<td>
-					<button type="button" onclick={() => deletePlayer(player.id)}>Delete</button>
-				</td>
-			</tr>
-		{/each}
-	</tbody>
-</table>
+				<tbody>
+					{#each players as player}
+						<tr>
+							<td>{player.id}</td>
+							<td>{player.name}</td>
+							<td>{player.age}</td>
+							<td>{player.rating}</td>
+							<td>{player.country}</td>
+							<td>
+								<button class="btn btn-primary" type="button" onclick={() => editPlayer(player)}>
+									Edit
+								</button>
+							</td>
+							<td>
+								<button class="btn btn-danger" type="button" onclick={() => deletePlayer(player.id)}>
+									Delete
+								</button>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	</section>
+</div>
