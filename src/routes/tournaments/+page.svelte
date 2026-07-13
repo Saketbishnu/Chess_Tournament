@@ -356,7 +356,7 @@
 		border-radius: 12px;
 		display: grid;
 		gap: 12px;
-		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
 		padding: 16px;
 	}
 
@@ -398,5 +398,19 @@
 	.empty-text {
 		color: #64748b;
 		margin: 0;
+	}
+
+	@media (max-width: 520px) {
+		.tournament-details {
+			padding: 12px;
+		}
+
+		.player-checklist label {
+			align-items: flex-start;
+		}
+
+		.player-checklist small {
+			line-height: 1.5;
+		}
 	}
 </style>

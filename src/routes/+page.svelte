@@ -1,144 +1,168 @@
 <script>
-	const featureCards = [
-		{
-			icon: "👤",
-			title: "Player Management",
-			text: "Create, update, and organize chess players.",
-			href: "/players",
-			button: "Manage Players"
-		},
-		{
-			icon: "🏆",
-			title: "Tournament Management",
-			text: "Create tournaments and assign players.",
-			href: "/tournaments",
-			button: "Manage Tournaments"
-		},
-		{
-			icon: "♟",
-			title: "Match System",
-			text: "Prepare match generation workflows.",
-			href: "/matches",
-			button: "View Matches"
-		},
-		{
-			icon: "🥇",
-			title: "Rankings",
-			text: "Review final standings and winners.",
-			href: "/ranking",
-			button: "View Rankings"
-		}
+	let dashboard = $state(null);
+	let loading = $state(true);
+	let errorMessage = $state("");
+
+	const quickLinks = [
+		{ label: "Players", href: "/players" },
+		{ label: "Tournaments", href: "/tournaments" },
+		{ label: "Matches", href: "/matches" },
+		{ label: "Ranking", href: "/ranking" },
+		{ label: "Contact", href: "/contact" }
 	];
 
-	const projectFeatures = [
-		"Manage Players",
-		"Manage Tournaments",
-		"Assign Players to Tournaments",
-		"Generate Random Matches",
-		"Display Final Rankings"
-	];
+	// Load dashboard statistics from the backend
+	async function loadDashboard() {
+		try {
+			loading = true;
+			errorMessage = "";
+
+			const response = await fetch("/");
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.error || "Failed to load dashboard");
+			}
+
+			dashboard = data;
+		} catch (error) {
+			console.error(error);
+			errorMessage = "Unable to load dashboard statistics.";
+		} finally {
+			loading = false;
+		}
+	}
+
+	$effect(() => {
+		loadDashboard();
+	});
 </script>
 
-<section class="hero page-header">
-	<h1>Chess Tournament Management System</h1>
-	<p>
-		A clean dashboard for managing chess players, tournaments, match planning,
-		and rankings in one place.
-	</p>
-</section>
-
-<section class="feature-grid">
-	{#each featureCards as feature}
-		<article class="feature-card card">
-			<div class="feature-icon">{feature.icon}</div>
-			<h2>{feature.title}</h2>
-			<p>{feature.text}</p>
-			<a class="btn btn-primary" href={feature.href}>{feature.button}</a>
-		</article>
-	{/each}
-</section>
-
-<section class="card features-section">
-	<h2 class="section-title">Project Features</h2>
-
-	<div class="feature-list">
-		{#each projectFeatures as feature}
-			<p>✔ {feature}</p>
-		{/each}
+<section class="home">
+	<div class="page-header">
+		<h1>Chess Tournament Management System</h1>
+		<p>
+			A simple web application for managing chess players, tournaments, generated
+			matches, and final rankings.
+		</p>
 	</div>
-</section>
 
-<footer class="footer">
-	<p>Chess Tournament Management System</p>
-</footer>
+	{#if loading}
+		<section class="card">
+			<p class="status-text">Loading dashboard...</p>
+		</section>
+	{:else if errorMessage}
+		<section class="card">
+			<p class="error-text">{errorMessage}</p>
+		</section>
+	{:else if dashboard}
+		<section class="stats-grid">
+			<article class="card stat-card">
+				<span>Players</span>
+				<strong>{dashboard.totalPlayers}</strong>
+			</article>
+
+			<article class="card stat-card">
+				<span>Tournaments</span>
+				<strong>{dashboard.totalTournaments}</strong>
+			</article>
+
+			<article class="card stat-card">
+				<span>Matches</span>
+				<strong>{dashboard.totalMatches}</strong>
+			</article>
+
+			<article class="card stat-card">
+				<span>Top Player</span>
+				<strong>{dashboard.topPlayer ? dashboard.topPlayer.name : "None"}</strong>
+				<small>{dashboard.topPlayer ? `${dashboard.topPlayer.wins} wins` : "No wins yet"}</small>
+			</article>
+		</section>
+	{/if}
+
+	<section class="card quick-nav">
+		<h2 class="section-title">Quick Navigation</h2>
+
+		<div class="quick-links">
+			{#each quickLinks as link}
+				<a class="btn btn-primary" href={link.href}>{link.label}</a>
+			{/each}
+		</div>
+	</section>
+</section>
 
 <style>
-	.hero {
-		padding: 34px 0 10px;
-		text-align: center;
-	}
-
-	.hero p {
-		margin-left: auto;
-		margin-right: auto;
-	}
-
-	.feature-grid {
+	.home {
 		display: grid;
-		gap: 22px;
-		grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-		margin: 28px 0;
+		gap: 24px;
 	}
 
-	.feature-card {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-	}
-
-	.feature-icon {
-		font-size: 36px;
-	}
-
-	.feature-card h2 {
-		color: #0f2a4a;
-		font-size: 22px;
-		margin: 0;
-	}
-
-	.feature-card p {
-		color: #526070;
-		line-height: 1.6;
-		margin: 0 0 8px;
-	}
-
-	.feature-card .btn {
-		align-self: flex-start;
-	}
-
-	.features-section {
-		margin-top: 28px;
-	}
-
-	.feature-list {
+	.stats-grid {
 		display: grid;
-		gap: 12px;
-		grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+		gap: 20px;
+		grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
 	}
 
-	.feature-list p {
-		background: #f8fafc;
-		border: 1px solid #e5e7eb;
-		border-radius: 10px;
-		color: #344256;
-		font-weight: 700;
-		margin: 0;
-		padding: 14px;
+	.stat-card {
+		display: grid;
+		gap: 8px;
 	}
 
-	.footer {
+	.stat-card span {
 		color: #64748b;
-		padding: 28px 0 8px;
-		text-align: center;
+		font-size: 14px;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.stat-card strong {
+		color: #0f2a4a;
+		font-size: 34px;
+		line-height: 1.2;
+		overflow-wrap: anywhere;
+	}
+
+	.stat-card small {
+		color: #526070;
+		font-weight: 700;
+	}
+
+	.quick-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	@media (max-width: 760px) {
+		.home {
+			gap: 20px;
+		}
+
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.stat-card strong {
+			font-size: 30px;
+		}
+
+		.quick-links {
+			align-items: stretch;
+			flex-direction: column;
+		}
+	}
+
+	.status-text,
+	.error-text {
+		margin: 0;
+	}
+
+	.status-text {
+		color: #526070;
+	}
+
+	.error-text {
+		color: #dc2626;
+		font-weight: 700;
 	}
 </style>

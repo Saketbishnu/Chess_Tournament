@@ -1,20 +1,6 @@
 import { json } from "@sveltejs/kit";
 import { pool } from "$lib/server/db";
 
-// Create the matches table if it does not already exist
-async function createMatchesTable() {
-	await pool.query(`
-		CREATE TABLE IF NOT EXISTS matches (
-			id SERIAL PRIMARY KEY,
-			tournament_id INT REFERENCES tournaments(id) ON DELETE CASCADE,
-			player1_id INT REFERENCES players(id),
-			player2_id INT REFERENCES players(id),
-			winner_id INT REFERENCES players(id),
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-		)
-	`);
-}
-
 // Randomly reorder players before making pairs
 function shufflePlayers(players) {
 	return [...players].sort(() => Math.random() - 0.5);
@@ -23,8 +9,6 @@ function shufflePlayers(players) {
 // GET all tournaments and all generated matches
 export async function GET() {
 	try {
-		await createMatchesTable();
-
 		const tournamentsResult = await pool.query(
 			`SELECT id, name
 			FROM tournaments
@@ -67,8 +51,6 @@ export async function GET() {
 // POST generate random matches for a tournament
 export async function POST({ request }) {
 	try {
-		await createMatchesTable();
-
 		const { tournament_id } = await request.json();
 
 		if (!tournament_id) {
@@ -89,48 +71,65 @@ export async function POST({ request }) {
 
 		const assignedPlayers = playersResult.rows;
 
-		if (assignedPlayers.length < 2) {
+		if (assignedPlayers.length === 0) {
 			return json(
-				{ error: "Tournament must contain at least 2 players." },
-				{ status: 400 }
-			);
-		}
-
-		if (assignedPlayers.length % 2 !== 0) {
-			return json(
-				{ error: "Tournament must contain an even number of players." },
+				{ error: "Tournament must contain at least 1 player." },
 				{ status: 400 }
 			);
 		}
 
 		const shuffledPlayers = shufflePlayers(assignedPlayers);
+		const byePlayer = shuffledPlayers.length % 2 === 1 ? shuffledPlayers.pop() : null;
 		const generatedMatches = [];
+		const client = await pool.connect();
 
-		for (let index = 0; index < shuffledPlayers.length; index += 2) {
-			const player1 = shuffledPlayers[index];
-			const player2 = shuffledPlayers[index + 1];
-			const winner = Math.random() < 0.5 ? player1 : player2;
+		try {
+			await client.query("BEGIN");
 
-			const matchResult = await pool.query(
-				`INSERT INTO matches (tournament_id, player1_id, player2_id, winner_id)
-				VALUES ($1, $2, $3, $4)
-				RETURNING id`,
-				[tournament_id, player1.id, player2.id, winner.id]
+			// Replace matches only for the selected tournament
+			await client.query(
+				"DELETE FROM matches WHERE tournament_id = $1",
+				[tournament_id]
 			);
 
-			generatedMatches.push({
-				id: matchResult.rows[0].id,
-				tournament_id,
-				player1_name: player1.name,
-				player2_name: player2.name,
-				winner_name: winner.name
-			});
+			for (let index = 0; index < shuffledPlayers.length; index += 2) {
+				const player1 = shuffledPlayers[index];
+				const player2 = shuffledPlayers[index + 1];
+				const winner = Math.random() < 0.5 ? player1 : player2;
+
+				const matchResult = await client.query(
+					`INSERT INTO matches (tournament_id, player1_id, player2_id, winner_id)
+					VALUES ($1, $2, $3, $4)
+					RETURNING id`,
+					[tournament_id, player1.id, player2.id, winner.id]
+				);
+
+				generatedMatches.push({
+					id: matchResult.rows[0].id,
+					tournament_id,
+					player1_name: player1.name,
+					player2_name: player2.name,
+					winner_name: winner.name
+				});
+			}
+
+			await client.query("COMMIT");
+		} catch (error) {
+			await client.query("ROLLBACK");
+			throw error;
+		} finally {
+			client.release();
 		}
+
+		const message = byePlayer
+			? `Matches generated successfully. ${byePlayer.name} received a BYE this round.`
+			: "Matches generated successfully.";
 
 		return json(
 			{
-				message: "Matches generated successfully",
-				matches: generatedMatches
+				message,
+				matches: generatedMatches,
+				byePlayer: byePlayer ? byePlayer.name : null
 			},
 			{ status: 201 }
 		);

@@ -70,11 +70,17 @@
 		font: inherit;
 	}
 
+	:global(img),
+	:global(svg) {
+		max-width: 100%;
+	}
+
 	.navbar {
 		align-items: center;
 		background: #0f2a4a;
 		color: white;
 		display: flex;
+		gap: 18px;
 		justify-content: space-between;
 		padding: 16px 32px;
 		position: sticky;
@@ -86,6 +92,7 @@
 		font-size: 18px;
 		font-weight: 700;
 		line-height: 1.3;
+		min-width: 220px;
 	}
 
 	.nav-links {
@@ -93,6 +100,7 @@
 		flex-wrap: wrap;
 		gap: 8px;
 		justify-content: flex-end;
+		min-width: 0;
 	}
 
 	.nav-links a {
@@ -120,14 +128,15 @@
 
 	:global(.page-header h1) {
 		color: #0f2a4a;
-		font-size: clamp(32px, 5vw, 52px);
+		font-size: clamp(30px, 5vw, 52px);
 		line-height: 1.1;
 		margin: 0 0 12px;
+		overflow-wrap: anywhere;
 	}
 
 	:global(.page-header p) {
 		color: #526070;
-		font-size: 18px;
+		font-size: clamp(16px, 2.4vw, 18px);
 		line-height: 1.6;
 		margin: 0;
 		max-width: 760px;
@@ -150,7 +159,7 @@
 	:global(.form-grid) {
 		display: grid;
 		gap: 18px;
-		grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
 	}
 
 	:global(.field label) {
@@ -181,7 +190,9 @@
 		color: white;
 		cursor: pointer;
 		font-weight: 700;
+		line-height: 1.2;
 		padding: 10px 16px;
+		text-align: center;
 	}
 
 	:global(.btn-primary) {
@@ -202,6 +213,8 @@
 
 	:global(.table-wrap) {
 		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		width: 100%;
 	}
 
 	:global(table) {
@@ -246,16 +259,95 @@
 		.navbar {
 			align-items: flex-start;
 			flex-direction: column;
-			gap: 14px;
-			padding: 16px 20px;
+			gap: 12px;
+			padding: 14px 16px;
+		}
+
+		.brand {
+			font-size: 16px;
+			min-width: 0;
+			width: 100%;
 		}
 
 		.nav-links {
 			justify-content: flex-start;
+			width: 100%;
+		}
+
+		.nav-links a {
+			font-size: 14px;
+			padding: 8px 10px;
 		}
 
 		main {
-			padding: 24px 14px;
+			padding: 22px 14px;
+		}
+
+		:global(.card) {
+			border-radius: 12px;
+			padding: 18px;
+		}
+
+		:global(.section-title) {
+			font-size: 21px;
+		}
+
+		:global(.form-grid) {
+			grid-template-columns: 1fr;
+		}
+
+		:global(.actions) {
+			align-items: stretch;
+			flex-direction: column;
+		}
+
+		:global(.btn) {
+			width: 100%;
+		}
+
+		:global(table) {
+			min-width: 640px;
+		}
+
+		:global(th),
+		:global(td) {
+			padding: 12px 10px;
+		}
+	}
+
+	@media (max-width: 420px) {
+		.navbar {
+			padding: 12px;
+		}
+
+		.nav-links {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.nav-links a {
+			text-align: center;
+		}
+
+		main {
+			padding: 18px 10px;
+		}
+
+		:global(.page-header) {
+			margin-bottom: 18px;
+		}
+
+		:global(.page-header h1) {
+			font-size: 28px;
+		}
+
+		:global(.card) {
+			padding: 14px;
+		}
+
+		:global(table) {
+			font-size: 14px;
+			min-width: 560px;
 		}
 	}
 </style>

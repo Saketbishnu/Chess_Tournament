@@ -48,6 +48,7 @@
 <style>
 	.contact-card {
 		max-width: 760px;
+		width: 100%;
 	}
 
 	.contact-grid {
@@ -77,5 +78,20 @@
 		font-size: 18px;
 		font-weight: 700;
 		overflow-wrap: anywhere;
+	}
+
+	@media (max-width: 520px) {
+		.contact-grid {
+			gap: 12px;
+		}
+
+		.contact-grid div {
+			padding: 14px;
+		}
+
+		.contact-grid strong,
+		.contact-grid a {
+			font-size: 16px;
+		}
 	}
 </style>
