@@ -19,19 +19,28 @@
 
 		<div>
 			<span>GitHub</span>
-			<a href="https://github.com/placeholder" target="_blank" rel="noreferrer">github.com/placeholder</a>
+			<a href="https://github.com/Saketbishnu" target="_blank" rel="noreferrer">https://github.com/Saketbishnu</a>
 		</div>
 
 		<div>
 			<span>LinkedIn</span>
-			<a href="https://linkedin.com/in/placeholder" target="_blank" rel="noreferrer">
-				linkedin.com/in/placeholder
+			<a href="https://www.linkedin.com/in/saket-bishnu-00769a269/" target="_blank" rel="noreferrer">
+				linkedin.com/in/saket-bishnu-00769a269/
 			</a>
 		</div>
 
 		<div>
 			<span>Email</span>
-			<a href="mailto:saket@example.com">saket@example.com</a>
+			<a href="mailto:saketbsn@example.com">saketbsn@example.com</a>
+		</div>
+		<div>
+			<span>Portfolio</span>
+			<a href="https://saket-bishnu.vercel.app/" target="_blank" rel="noreferrer">https://saket-bishnu.vercel.app/</a>
+		</div>
+
+		<div>
+			<span>Clinic Website</span>
+			<a href="https://good-life-clinic.vercel.app/" target="_blank" rel="noreferrer">https://good-life-clinic.vercel.app/</a>
 		</div>
 	</div>
 </section>

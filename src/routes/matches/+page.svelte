@@ -97,7 +97,7 @@
 		{:else}
 			<div class="table-wrap">
 				<table>
-					<thead>
+					 <thead>
 						<tr>
 							<th>Player 1</th>
 							<th>Player 2</th>
