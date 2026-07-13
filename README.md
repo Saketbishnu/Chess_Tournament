@@ -1,21 +1,90 @@
 # ♟️ Chess Tournament Management System
 
-A web-based Chess Tournament Management System built using **SvelteKit** and **PostgreSQL**.
+A web-based Chess Tournament Management System developed using **SvelteKit** and **PostgreSQL**.
 
-The application allows administrators to manage players, create tournaments, assign players to tournaments, generate random matches, automatically select winners, and display tournament rankings.
-
----
-
-# 🚀 Tech Stack
-
-- **Frontend:** Svelte
-- **Backend:** SvelteKit
-- **Database:** PostgreSQL
-- **Language:** JavaScript
+The application allows administrators to manage chess tournaments by creating players, organizing tournaments, assigning players, generating random matches, selecting winners automatically, and displaying tournament rankings.
 
 ---
 
-# 📦 Project Setup
+# 🚀 Features
+
+## Dashboard
+
+- Display total players
+- Display total tournaments
+- Display total generated matches
+- Display top-ranked player
+
+---
+
+## Player Management
+
+- Add Player
+- View Players
+- Update Player
+- Delete Player
+
+---
+
+## Tournament Management
+
+- Create Tournament
+- View Tournament
+- Update Tournament
+- Delete Tournament
+
+---
+
+## Player Assignment
+
+- Assign multiple players to tournaments
+- Remove assigned players
+- Save tournament participants
+
+---
+
+## Match Generation
+
+- Randomly shuffle players
+- Automatically generate matches
+- Randomly select winners
+- Support odd number of players using BYE
+- Regenerate matches for a tournament
+- Previous matches for the selected tournament are replaced
+
+---
+
+## Ranking
+
+- Count player wins
+- Display rankings
+- Sort by:
+  - Highest Wins
+  - Highest Rating (Tie Breaker)
+
+---
+
+## Responsive UI
+
+- Desktop
+- Tablet
+- Mobile
+
+---
+
+# 🛠 Tech Stack
+
+| Technology | Used |
+|------------|------|
+| Svelte | ✅ |
+| SvelteKit | ✅ |
+| PostgreSQL | ✅ |
+| JavaScript | ✅ |
+| CSS | ✅ |
+
+---
+
+# ⚙ Installation
 
 Clone the repository
 
@@ -23,7 +92,7 @@ Clone the repository
 git clone https://github.com/Saketbishnu/Chess_Tournament.git
 ```
 
-Navigate to the project folder
+Go into the project
 
 ```bash
 cd Chess_Tournament
@@ -35,7 +104,17 @@ Install dependencies
 npm install
 ```
 
-Run the development server
+Create a `.env` file
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_NAME=chess_tournament
+```
+
+Run the project
 
 ```bash
 npm run dev
@@ -49,7 +128,7 @@ http://localhost:5173
 
 ---
 
-# 🏗️ System Architecture
+# 🏗 System Architecture
 
 ```
                 User
@@ -57,7 +136,7 @@ http://localhost:5173
                   ▼
           Svelte Frontend
                   │
-         HTTP API Requests
+             Fetch API
                   │
                   ▼
         SvelteKit Backend
@@ -65,71 +144,68 @@ http://localhost:5173
           PostgreSQL Queries
                   │
                   ▼
-          PostgreSQL Database
+         PostgreSQL Database
 ```
 
 ---
 
-# 🔄 Project Workflow
+# 🔄 Application Workflow
 
 ```
-Admin Opens Website
-        │
-        ▼
+Dashboard
+      │
+      ▼
 Create Players
-        │
-        ▼
+      │
+      ▼
 Create Tournament
-        │
-        ▼
-Assign Players to Tournament
-        │
-        ▼
-Generate Random Matches
-        │
-        ▼
+      │
+      ▼
+Assign Players
+      │
+      ▼
+Generate Matches
+      │
+      ▼
 Random Winner Selection
-        │
-        ▼
-Store Match Results
-        │
-        ▼
-Display Final Rankings
+      │
+      ▼
+Save Match Results
+      │
+      ▼
+Calculate Rankings
+      │
+      ▼
+Display Dashboard Statistics
 ```
 
 ---
 
-# 🗄️ Database Design
+# 🗄 Database Schema
 
-The project uses **four relational tables**.
+The project uses four relational tables.
 
 ```
 Players
-    │
-    ▼
-Tournaments
-    │
-    ▼
-Tournament_Players
-    │
-    ▼
-Matches
+     │
+     ├──────────────┐
+     │              │
+     ▼              │
+Tournament_Players  │
+     ▲              │
+     │              │
+Tournaments         │
+                    │
+                    ▼
+                 Matches
 ```
 
 ---
 
-# 📋 Database Tables
+## Players
 
-## 1. Players
-
-| id | name | age | rating | country |
-|----|------|----:|-------:|---------|
-| 1 | Saket | 22 | 900 | India |
-
-### Table Structure
-
-| Column | Data Type |
-|----------|------------|
+| Column | Type |
+|---------|------|
 | id | SERIAL PRIMARY KEY |
 | name | VARCHAR(100) |
 | age | INTEGER |
@@ -137,66 +213,44 @@ Matches
 | country | VARCHAR(100) |
 | created_at | TIMESTAMP |
 
-### Screenshot
-
-![Players Table](screenshots/player-table.png)
-
 ---
 
-## 2. Tournaments
+## Tournaments
 
-| id | name | location | start_date | created_at |
-|----|------|----------|------------|------------|
-| 1 | XYZ | Mumbai | 2026-07-18 | 2026-07-10 03:14:22 |
-
-### Table Structure
-
-| Column | Data Type |
-|----------|------------|
+| Column | Type |
+|---------|------|
 | id | SERIAL PRIMARY KEY |
 | name | VARCHAR(100) |
 | location | VARCHAR(100) |
 | start_date | DATE |
 | created_at | TIMESTAMP |
 
-### Screenshot
+---
 
-![Tournament Table](screenshots/tournament_table.png)
+## Tournament Players
+
+| Column | Type |
+|---------|------|
+| id | SERIAL PRIMARY KEY |
+| tournament_id | INTEGER |
+| player_id | INTEGER |
 
 ---
 
-# ✨ Features
+## Matches
 
-## ✅ Player Management
-
-- Add Player
-- View Players
-- Update Player
-- Delete Player
-
----
-
-## ✅ Tournament Management
-
-- Create Tournament
-- View Tournaments
-- Update Tournament
-- Delete Tournament
+| Column | Type |
+|---------|------|
+| id | SERIAL PRIMARY KEY |
+| tournament_id | INTEGER |
+| player1_id | INTEGER |
+| player2_id | INTEGER |
+| winner_id | INTEGER |
+| created_at | TIMESTAMP |
 
 ---
 
-## 🚧 Upcoming Features
-
-- Add Players to Tournament
-- Random Match Generation
-- Random Winner Selection
-- Match History
-- Tournament Rankings (1st, 2nd, 3rd)
-- Improved UI Design
-
----
-
-# 📁 Project Structure
+# 📂 Project Structure
 
 ```
 src
@@ -206,6 +260,9 @@ src
 │       └── db.js
 │
 └── routes
+    ├── +page.svelte
+    ├── +server.js
+    │
     ├── players
     │   ├── +page.svelte
     │   └── +server.js
@@ -215,9 +272,69 @@ src
     │   └── +server.js
     │
     ├── matches
+    │   ├── +page.svelte
+    │   └── +server.js
     │
-    └── ranking
+    ├── ranking
+    │   ├── +page.svelte
+    │   └── +server.js
+    │
+    └── contact
+        └── +page.svelte
 ```
 
 ---
 
+# 🖥 Application Pages
+
+- Home Dashboard
+- Player Management
+- Tournament Management
+- Match Generation
+- Rankings
+- Contact
+
+---
+
+# 📸 Screenshots
+
+Add screenshots here.
+
+```
+screenshots/
+
+home.png
+
+players.png
+
+tournaments.png
+
+matches.png
+
+ranking.png
+
+contact.png
+```
+
+---
+
+# 🔮 Future Improvements
+
+- Swiss Tournament Pairing
+- Authentication
+- Tournament History
+- Export Results to PDF
+- Email Notifications
+
+---
+
+# 👨‍💻 Author
+
+**Saket Bishnu**
+
+B.Tech CSE (Big Data Analytics)
+
+SRM Institute of Science and Technology
+
+GitHub:
+https://github.com/Saketbishnu
