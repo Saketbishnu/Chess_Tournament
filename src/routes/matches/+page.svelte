@@ -1,38 +1,70 @@
 <script>
 	let selectedTournament = $state("");
+	let tournaments = $state([]);
+	let matches = $state([]);
+	let message = $state("");
 
-	const tournaments = [
-		"City Chess Championship",
-		"Rapid Masters Cup",
-		"Junior Open Tournament"
-	];
+	// Load tournaments and generated matches
+	async function loadMatchesPageData() {
+		try {
+			const response = await fetch("/matches");
+			const data = await response.json();
 
-	const matches = [
-		{
-			player1: "Aarav Sharma",
-			player2: "Nikhil Rao",
-			winner: "Pending",
-			status: "Not Started"
-		},
-		{
-			player1: "Meera Iyer",
-			player2: "Rohan Das",
-			winner: "Pending",
-			status: "Not Started"
-		},
-		{
-			player1: "Kavya Sen",
-			player2: "Arjun Nair",
-			winner: "Pending",
-			status: "Not Started"
+			if (!response.ok) {
+				throw new Error(data.error || "Failed to load matches");
+			}
+
+			tournaments = data.tournaments;
+			matches = data.matches;
+		} catch (error) {
+			console.error(error);
+			message = error.message;
 		}
-	];
+	}
+
+	// Generate random matches for the selected tournament
+	async function generateMatches() {
+		message = "";
+
+		try {
+			const response = await fetch("/matches", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					tournament_id: selectedTournament
+				})
+			});
+
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.error || "Failed to generate matches");
+			}
+
+			message = data.message;
+			await loadMatchesPageData();
+		} catch (error) {
+			console.error(error);
+			message = error.message;
+		}
+	}
+
+	// Load data when this page opens
+	$effect(() => {
+		loadMatchesPageData();
+	});
 </script>
 
 <section class="page-header">
 	<h1>Matches</h1>
-	<p>Generate tournament pairings here once the match system backend is ready.</p>
+	<p>Generate random matches for players assigned to a tournament.</p>
 </section>
+
+{#if message}
+	<p class="message">{message}</p>
+{/if}
 
 <div class="stack">
 	<section class="card">
@@ -44,42 +76,53 @@
 				<select id="tournament" bind:value={selectedTournament}>
 					<option value="">Select Tournament</option>
 					{#each tournaments as tournament}
-						<option value={tournament}>{tournament}</option>
+						<option value={tournament.id}>{tournament.name}</option>
 					{/each}
 				</select>
 			</div>
 		</div>
 
 		<div class="actions">
-			<button class="btn btn-primary" type="button">Generate Matches</button>
+			<button class="btn btn-primary" type="button" onclick={generateMatches}>
+				Generate Matches
+			</button>
 		</div>
 	</section>
 
 	<section class="card">
-		<h2 class="section-title">Match List</h2>
+		<h2 class="section-title">Generated Matches</h2>
 
-		<div class="table-wrap">
-			<table>
-				<thead>
-					<tr>
-						<th>Player 1</th>
-						<th>Player 2</th>
-						<th>Winner</th>
-						<th>Status</th>
-					</tr>
-				</thead>
-
-				<tbody>
-					{#each matches as match}
+		{#if matches.length === 0}
+			<p class="empty-text">No matches generated.</p>
+		{:else}
+			<div class="table-wrap">
+				<table>
+					<thead>
 						<tr>
-							<td>{match.player1}</td>
-							<td>{match.player2}</td>
-							<td>{match.winner}</td>
-							<td>{match.status}</td>
+							<th>Player 1</th>
+							<th>Player 2</th>
+							<th>Winner</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+					</thead>
+
+					<tbody>
+						{#each matches as match}
+							<tr>
+								<td>{match.player1_name}</td>
+								<td>{match.player2_name}</td>
+								<td>{match.winner_name}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
 	</section>
 </div>
+
+<style>
+	.empty-text {
+		color: #64748b;
+		margin: 0;
+	}
+</style>
